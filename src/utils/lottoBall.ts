@@ -6,11 +6,18 @@ export class LottoBall implements Ball {
   public R: number;
   public color: string;
 
-  constructor() {
+  constructor(initOption: {
+    posX: number;
+    posY: number;
+    velX: number;
+    velY: number;
+    color: BALL_COLOR;
+  }) {
+    const { posX, posY, velX, velY, color } = initOption;
     this.R = 20;
-    this.pos = { x: 0, y: 0 };
-    this.vel = { x: 0, y: 0 };
-    this.color = BALL_COLOR.RED;
+    this.pos = { x: posX, y: posY };
+    this.vel = { x: velX, y: velY };
+    this.color = color;
   }
 
   static nextPos(pos: Position2D, vel: Velocity2D, grav: number) {
@@ -55,6 +62,7 @@ export enum BALL_COLOR {
   BLUE = "BLUE",
   GREEN = "GREEN",
   YELLOW = "YELLOW",
+  BLACK = "BLACK",
 }
 
 // types end

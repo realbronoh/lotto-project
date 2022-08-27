@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LottoBall } from "../utils/lottoBall";
+import { Layer } from "../utils/layer";
 
 export const LottoMachine = () => {
-  const canvasRef = useRef(null);
-  const [canvasTag, setCanvasTag] = useState<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [layers, setLayers] = useState<Layer[]>([]);
   const DPR = devicePixelRatio;
   const CANVAS_STYLE_WIDTH = 500;
   const CANVAS_STYLE_HEIGHT = 500;
@@ -12,35 +12,38 @@ export const LottoMachine = () => {
     y: 250 * DPR,
   };
 
-  const testfunc = () => {
-    const ctx = canvasTag?.getContext("2d");
+  useEffect(() => {
+    console.log("############");
+    const canvas = canvasRef.current;
+
+    const newLayers = [];
+    for (let i = 0; i < 5; i++) {
+      const layer = new Layer();
+      newLayers.push(layer);
+    }
+    setLayers(newLayers);
+    console.log("layers: ", layers);
+  }, []);
+
+  const drawShowCase = () => {
+    const canvas = canvasRef.current;
+    if (canvas === null) {
+      return;
+    }
+    const ctx = canvas.getContext("2d");
     if (!ctx) {
       return;
     }
-    const testBall = new LottoBall();
-
-    ctx.fillStyle = "green";
     ctx.beginPath();
-    ctx.arc(
-      CENTER.x + testBall.pos.x,
-      CENTER.y + testBall.pos.y,
-      testBall.R,
-      0,
-      Math.PI * 2,
-      true
-    );
+    ctx.arc(CENTER.x, CENTER.y, 250, 0, Math.PI * 2, true);
     ctx.stroke();
-    ctx.fillStyle = "green";
-    ctx.fill();
   };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    setCanvasTag(canvas);
-    if (canvasTag === null) return;
-    canvasTag.width = DPR * CANVAS_STYLE_WIDTH;
-    canvasTag.height = DPR * CANVAS_STYLE_HEIGHT;
-  });
+  const draw = () => {
+    layers.forEach((layer) => {
+      layer.draw(canvasRef.current, CENTER);
+    });
+    drawShowCase();
+  };
 
   return (
     <>
@@ -50,7 +53,9 @@ export const LottoMachine = () => {
           height: "15px",
           backgroundColor: "green",
         }}
-        onClick={testfunc}
+        onClick={() => {
+          draw();
+        }}
       >
         TEST
       </button>
@@ -60,6 +65,8 @@ export const LottoMachine = () => {
           width: CANVAS_STYLE_WIDTH,
           height: CANVAS_STYLE_HEIGHT,
         }}
+        width={DPR * CANVAS_STYLE_WIDTH}
+        height={DPR * CANVAS_STYLE_HEIGHT}
       ></canvas>
     </>
   );
