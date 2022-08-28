@@ -1,5 +1,5 @@
 const DELTA = 0.2;
-const GRAV = 1;
+const GRAV = 2;
 
 export class LottoBall implements Ball {
   public pos: Position2D;
@@ -54,11 +54,23 @@ export const getNormalVector = (vec1: Vector2D, vec2: Vector2D) => {
   };
 };
 
+export const getPosAfterCollision = (
+  pos: Vector2D,
+  normalVector: Vector2D,
+  overlapped: number
+) => {
+  // const normalDirectionSign = Math.sign(dotProduct(pos, normalVector));
+  return {
+    x: 230 * normalVector.x,
+    y: 230 * normalVector.y,
+  };
+};
+
 export const getVelAfterCollision = (vel: Vector2D, normalVector: Vector2D) => {
   const normalDirectionPortion = dotProduct(vel, normalVector);
   return {
-    x: vel.x - 2 * normalDirectionPortion * normalVector.x,
-    y: vel.y - 2 * normalDirectionPortion * normalVector.y,
+    x: (vel.x - 2 * normalDirectionPortion * normalVector.x) * 0.9,
+    y: (vel.y - 2 * normalDirectionPortion * normalVector.y) * 0.9,
   };
 };
 

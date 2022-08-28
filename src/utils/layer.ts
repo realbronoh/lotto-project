@@ -1,8 +1,8 @@
 import {
   BALL_COLOR,
-  dotProduct,
   getDistanceSquare,
   getNormalVector,
+  getPosAfterCollision,
   getVelAfterCollision,
   LottoBall,
   Position2D,
@@ -28,16 +28,18 @@ export class Layer {
    * init layers: 2 balls
    */
   private init() {
-    for (let i = 0; i < 2; i++) {
-      const posX = Math.pow(-1, i) * Math.max(10, 230 * Math.random());
+    for (let i = 0; i < 1; i++) {
+      // const posX = Math.pow(-1, i % 2) * Math.max(10, 230 * Math.random());
+      const posX =
+        (Math.random() > 0.5 ? 1 : -1) * Math.max(10, 220 * Math.random());
       const posY =
         (Math.random() > 0.5 ? 1 : -1) *
-        Math.max(10, Math.sqrt(240 * 240 - posX * posX) * Math.random());
+        Math.max(10, Math.sqrt(220 * 220 - posX * posX) * Math.random());
       const ball = new LottoBall({
         posX,
         posY,
-        velX: (Math.random() - 1) * 2,
-        velY: (Math.random() - 1) * 2,
+        velX: (Math.random() - 1) * 3,
+        velY: (Math.random() - 1) * 3,
         radius: 20,
         color: ballColors[Math.floor(Math.random() * 5)],
       });
@@ -45,35 +47,31 @@ export class Layer {
     }
   }
   private handleCollision() {
-    // handle collision between balls
-    for (let i = 0; i < this.balls.length - 1; i++) {
-      for (let j = i + 1; j < this.balls.length; j++) {
-        const ball1 = this.balls[i];
-        const ball2 = this.balls[j];
-        if (getDistanceSquare(ball1.pos, ball2.pos) < 20 * 20) {
-          const normalVector = getNormalVector(ball1.pos, ball2.pos);
-          ball1.vel = getVelAfterCollision(ball1.vel, normalVector);
-          ball2.vel = getVelAfterCollision(ball2.vel, normalVector);
-        }
-      }
-    }
+    // // handle collision between balls
+    // for (let i = 0; i < this.balls.length - 1; i++) {
+    //   for (let j = i + 1; j < this.balls.length; j++) {
+    //     const ball1 = this.balls[i];
+    //     const ball2 = this.balls[j];
+    //     const distanceSquare = getDistanceSquare(ball1.pos, ball2.pos);
+    //     if (distanceSquare < 40 * 40) {
+    //       const normalVector = getNormalVector(ball1.pos, ball2.pos);
+    //       const overlapped = 40 - Math.sqrt(distanceSquare);
+    //       ball1.pos = getPosAfterCollision(ball1.pos, normalVector, overlapped);
+    //       ball2.pos = getPosAfterCollision(ball2.pos, normalVector, overlapped);
+    //       ball1.vel = getVelAfterCollision(ball1.vel, normalVector);
+    //       ball2.vel = getVelAfterCollision(ball2.vel, normalVector);
+    //     }
+    //   }
+    // }
 
     // lastly handle collision with case
     const origin = { x: 0, y: 0 };
     this.balls.forEach((ball) => {
-      if (getDistanceSquare(ball.pos, origin) > 230 * 230) {
-        console.log("### COLLISION WITH CASE!! ###");
+      const distanceSquare = getDistanceSquare(ball.pos, origin);
+      if (distanceSquare >= 230 * 230) {
         const normalVector = getNormalVector(ball.pos, origin);
-        console.log(ball);
-        console.log("normal vector at collision: ", normalVector);
-        console.log(
-          "normal vector size: ",
-          dotProduct(normalVector, normalVector)
-        );
-        ball.pos = {
-          x: ball.pos.x * 0.95,
-          y: ball.pos.y * 0.95,
-        };
+        const overlapped = Math.sqrt(distanceSquare) - 230;
+        ball.pos = getPosAfterCollision(ball.pos, normalVector, overlapped);
         ball.vel = getVelAfterCollision(ball.vel, normalVector);
       }
     });

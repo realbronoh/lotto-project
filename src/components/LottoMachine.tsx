@@ -16,7 +16,7 @@ export const LottoMachine = () => {
     const canvas = canvasRef.current;
 
     const newLayers = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 45; i++) {
       const layer = new Layer();
       newLayers.push(layer);
     }
