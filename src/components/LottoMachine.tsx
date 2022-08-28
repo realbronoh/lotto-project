@@ -8,21 +8,19 @@ export const LottoMachine = () => {
   const CANVAS_STYLE_WIDTH = 500;
   const CANVAS_STYLE_HEIGHT = 500;
   const CENTER = {
-    x: 250 * DPR,
-    y: 250 * DPR,
+    x: 250,
+    y: 250,
   };
 
   useEffect(() => {
-    console.log("############");
     const canvas = canvasRef.current;
 
     const newLayers = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       const layer = new Layer();
       newLayers.push(layer);
     }
     setLayers(newLayers);
-    console.log("layers: ", layers);
   }, []);
 
   const drawShowCase = () => {
@@ -35,30 +33,29 @@ export const LottoMachine = () => {
       return;
     }
     ctx.beginPath();
-    ctx.arc(CENTER.x, CENTER.y, 250, 0, Math.PI * 2, true);
+    ctx.arc(CENTER.x * DPR, CENTER.y * DPR, 250 * DPR, 0, Math.PI * 2, true);
     ctx.stroke();
   };
+
+  const initCanvas = () => {
+    const canvas = canvasRef.current;
+    if (canvas === null) {
+      return;
+    }
+    canvas.width = canvas.width;
+  };
+
   const draw = () => {
+    initCanvas();
     layers.forEach((layer) => {
       layer.draw(canvasRef.current, CENTER);
     });
     drawShowCase();
+    requestAnimationFrame(draw);
   };
 
   return (
     <>
-      <button
-        style={{
-          width: "30px",
-          height: "15px",
-          backgroundColor: "green",
-        }}
-        onClick={() => {
-          draw();
-        }}
-      >
-        TEST
-      </button>
       <canvas
         ref={canvasRef}
         style={{
@@ -68,6 +65,21 @@ export const LottoMachine = () => {
         width={DPR * CANVAS_STYLE_WIDTH}
         height={DPR * CANVAS_STYLE_HEIGHT}
       ></canvas>
+      <button
+        style={{
+          width: "100px",
+          height: "50px",
+          backgroundColor: "green",
+          display: "flex",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+        onClick={() => {
+          draw();
+        }}
+      >
+        TEST
+      </button>
     </>
   );
 };

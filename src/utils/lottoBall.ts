@@ -1,9 +1,10 @@
-const DELTA = 1;
+const DELTA = 0.2;
+const GRAV = 1;
 
 export class LottoBall implements Ball {
   public pos: Position2D;
   public vel: Velocity2D;
-  public R: number;
+  public radius: number;
   public color: string;
 
   constructor(initOption: {
@@ -11,49 +12,77 @@ export class LottoBall implements Ball {
     posY: number;
     velX: number;
     velY: number;
+    radius: number;
     color: BALL_COLOR;
   }) {
-    const { posX, posY, velX, velY, color } = initOption;
-    this.R = 20;
+    const { posX, posY, velX, velY, radius, color } = initOption;
+    this.radius = radius;
     this.pos = { x: posX, y: posY };
     this.vel = { x: velX, y: velY };
     this.color = color;
   }
 
-  static nextPos(pos: Position2D, vel: Velocity2D, grav: number) {
+  static nextPos(pos: Position2D, vel: Velocity2D) {
     return {
       x: pos.x + vel.x * DELTA,
-      y: pos.y + vel.y * DELTA + 0.5 * grav * DELTA * DELTA,
+      y: pos.y + vel.y * DELTA + 0.5 * GRAV * DELTA * DELTA,
     };
   }
-  static nextVel(vel: Velocity2D, grav: number) {
+  static nextVel(vel: Velocity2D) {
     return {
       x: vel.x,
-      y: vel.y + grav * DELTA,
+      y: vel.y + GRAV * DELTA,
     };
   }
 }
 
 // util functions
 
-const dotProduct = (vec1: Vecter2D, vec2: Vecter2D) => {
-  return vec1.x * vec2.x + vec1.y + vec2.y;
+export const dotProduct = (vec1: Vector2D, vec2: Vector2D) => {
+  return vec1.x * vec2.x + vec1.y * vec2.y;
+};
+
+export const getNormalVector = (vec1: Vector2D, vec2: Vector2D) => {
+  const delta = {
+    x: vec1.x - vec2.x,
+    y: vec1.y - vec2.y,
+  };
+  const size = Math.sqrt(dotProduct(delta, delta));
+  return {
+    x: delta.x / size,
+    y: delta.y / size,
+  };
+};
+
+export const getVelAfterCollision = (vel: Vector2D, normalVector: Vector2D) => {
+  const normalDirectionPortion = dotProduct(vel, normalVector);
+  return {
+    x: vel.x - 2 * normalDirectionPortion * normalVector.x,
+    y: vel.y - 2 * normalDirectionPortion * normalVector.y,
+  };
+};
+
+export const getDistanceSquare = (vec1: Vector2D, vec2: Vector2D) => {
+  return (
+    (vec1.x - vec2.x) * (vec1.x - vec2.x) +
+    (vec1.y - vec2.y) * (vec1.y - vec2.y)
+  );
 };
 
 // util functions end
 // types
 
-export interface Vecter2D {
+export interface Vector2D {
   x: number;
   y: number;
 }
-export interface Position2D extends Vecter2D {}
-export interface Velocity2D extends Vecter2D {}
+export interface Position2D extends Vector2D {}
+export interface Velocity2D extends Vector2D {}
 
 export interface Ball {
   pos: Position2D;
   vel: Velocity2D;
-  R: number;
+  radius: number;
   color?: string;
 }
 
